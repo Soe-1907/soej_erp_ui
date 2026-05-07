@@ -1,0 +1,38 @@
+/* 客户/供应商查看与表单：四列 标签|值|标签|值 */
+.detail-field-grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.detail-field-grid td {
+  border: 1px solid #dcdfe6;
+  padding: 10px 12px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.detail-field-grid .detail-label-cell {
+  width: 18%;
+  background: #f5f7fa;
+  text-align: center;
+  color: #606266;
+  vertical-align: middle;
+}
+
+.detail-field-grid .detail-value-cell {
+  width: 32%;
+  background: #fff;
+  text-align: left;
+  color: #303133;
+  vertical-align: middle;
+}
+
+.detail-field-grid--form .detail-value-cell .cell-form-item {
+  margin-bottom: 0;
+}
+
+.detail-field-grid--form .detail-value-cell .el-form-item__error {
+  position: static;
+  padding-top: 4px;
+}

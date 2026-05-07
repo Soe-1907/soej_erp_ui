@@ -1,0 +1,5 @@
+/* 弹窗内表单项标签：加粗、单行（与效果图一致） */
+.el-dialog .el-form-item__label {
+  font-weight: 700;
+  white-space: nowrap;
+}

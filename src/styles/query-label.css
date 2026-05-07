@@ -1,0 +1,4 @@
+.query-label {
+  font-weight: 700;
+  color: var(--el-text-color-primary, #303133);
+}
