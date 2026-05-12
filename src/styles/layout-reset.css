@@ -1,0 +1,17 @@
+/* 全局布局基线：确保整体页面自适应、不产生浏览器级滑轨 */
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

@@ -96,7 +96,7 @@
   </BaseTable>
 
   <div class="pagination-container">
-    <BasePagination
+    <Pagination
       v-model:pageNum="ProductQuery.pageNum!"
       v-model:pageSize="ProductQuery.pageSize!"
       :total="total"
@@ -134,7 +134,7 @@ import type { TableColumn } from "@/type/table";
 import type { ProductDto, ProductVO } from "@/type/product";
 
 import BaseTable from "@/components/table/BaseTable/BaseTable.vue";
-import BasePagination from "@/components/page/BasePagination.vue";
+import Pagination from "@/layouts/components/Pagination.vue";
 import QueryStatusSelect from "@/components/query/Query/QueryStatusSelect.vue";
 import QueryInput from "@/components/query/Query/QueryInput.vue";
 import QueryDateTimeRange from "@/components/query/Query/QueryDateTimeRange.vue";

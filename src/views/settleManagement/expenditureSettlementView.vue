@@ -36,7 +36,7 @@
     </template>
   </BaseTable>
 
-  <BasePagination
+  <Pagination
     v-model:pageNum="query.pageNum!"
     v-model:pageSize="query.pageSize!"
     :total="total"
@@ -67,7 +67,7 @@ import { ElMessage } from 'element-plus'
 import { RefreshRight, Search } from '@element-plus/icons-vue'
 import type { TableColumn } from '@/type/table'
 import type { ExpenditureSettlementVO } from '@/type/expenditureSettlement'
-import BasePagination from '@/components/page/BasePagination.vue'
+import Pagination from '@/layouts/components/Pagination.vue'
 import BaseTable from '@/components/table/BaseTable/BaseTable.vue'
 import QueryInput from '@/components/query/Query/QueryInput.vue'
 import { useExpenditureSettlement } from '@/hooks/ExpenditureSettlement/useExpenditureSettlement'

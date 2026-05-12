@@ -55,7 +55,7 @@
     </el-table-column>
   </el-table>
 
-  <BasePagination
+  <Pagination
     v-model:pageNum="query.pageNum!"
     v-model:pageSize="query.pageSize!"
     :total="total"
@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { RefreshRight, Search } from '@element-plus/icons-vue'
-import BasePagination from '@/components/page/BasePagination.vue'
+import Pagination from '@/layouts/components/Pagination.vue'
 import QueryInput from '@/components/query/Query/QueryInput.vue'
 import { useInventoryDistribution } from '@/hooks/InventoryDistribution/useInventoryDistribution'
 

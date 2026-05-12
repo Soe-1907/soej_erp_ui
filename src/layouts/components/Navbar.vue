@@ -9,7 +9,7 @@
       <div class="navbar-right">
         <!-- 通知铃铛 -->
         <el-badge :value="notificationCount" :hidden="notificationCount === 0" class="notification-badge">
-          <el-icon size="20" class="notification-icon" @click="handleNotificationClick">
+          <el-icon size="23" class="notification-icon" @click="handleNotificationClick">
             <Bell />
           </el-icon>
         </el-badge>
@@ -81,12 +81,13 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
-import { Bell, ArrowDown, UserFilled, SwitchButton } from '@element-plus/icons-vue'
+import { ArrowDown, UserFilled, SwitchButton } from '@element-plus/icons-vue'
 import { countSystemMessagesApi, querySystemMessagesApi } from '@/api/product/systemMessage'
 import { ROLE_WAREHOUSE_SPECIALIST } from '@/constants/role'
 import { useUserStore } from '@/stores/user'
 import { useLogin } from '@/hooks/useLogin'
 import type { SystemMessageVO } from '@/type/systemMessage'
+import Bell from '@/components/icons/BellIcon.vue'
 import Breadcrumb from './Breadcrumb.vue'
 import TagBreadcrumb from './TagBreadcrumb.vue'
 

@@ -25,8 +25,9 @@ import Navbar from "./components/Navbar.vue";
 
 <style scoped>
 .common-layout {
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 .el-container {
@@ -35,8 +36,7 @@ import Navbar from "./components/Navbar.vue";
 
 .el-aside {
   background-color: #304156;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .el-header {
@@ -47,6 +47,6 @@ import Navbar from "./components/Navbar.vue";
 .el-main {
   background-color: #f0f2f5;
   padding: 20px;
-  overflow-y: auto;
+  overflow: hidden;
 }
 </style>

@@ -96,7 +96,7 @@
     </el-table-column>
   </el-table>
 
-  <BasePagination
+  <Pagination
     v-model:pageNum="query.pageNum!"
     v-model:pageSize="query.pageSize!"
     :total="total"
@@ -224,7 +224,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { RefreshRight, Search } from '@element-plus/icons-vue'
-import BasePagination from '@/components/page/BasePagination.vue'
+import Pagination from '@/layouts/components/Pagination.vue'
 import QueryDateTimeRange from '@/components/query/Query/QueryDateTimeRange.vue'
 import QueryInput from '@/components/query/Query/QueryInput.vue'
 import { ROLE_WAREHOUSE_SPECIALIST } from '@/constants/role'

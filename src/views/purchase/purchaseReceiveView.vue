@@ -83,7 +83,7 @@
     </template>
   </BaseTable>
 
-  <BasePagination
+  <Pagination
     v-model:pageNum="query.pageNum!"
     v-model:pageSize="query.pageSize!"
     :total="total"
@@ -111,7 +111,7 @@ import { Search, RefreshRight, Plus } from '@element-plus/icons-vue'
 import type { TableColumn } from '@/type/table'
 import type { PurchaseReceiveDto, PurchaseReceiveVO } from '@/type/purchaseReceive'
 import BaseTable from '@/components/table/BaseTable/BaseTable.vue'
-import BasePagination from '@/components/page/BasePagination.vue'
+import Pagination from '@/layouts/components/Pagination.vue'
 import QueryInput from '@/components/query/Query/QueryInput.vue'
 import QueryDateTimeRange from '@/components/query/Query/QueryDateTimeRange.vue'
 import PurchaseReceiveAddDialog from './purchaseReceiveAddDialog.vue'

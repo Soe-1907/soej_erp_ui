@@ -197,7 +197,7 @@
       <el-table-column prop="warehouseCode" label="仓库编号" />
       <el-table-column prop="warehouseName" label="仓库名称" />
     </el-table>
-    <BasePagination
+    <Pagination
       v-model:pageNum="warehouseQuery.pageNum!"
       v-model:pageSize="warehouseQuery.pageSize!"
       :total="warehouseTotal"
@@ -234,7 +234,7 @@
       <el-table-column prop="contactName" label="联系人" />
       <el-table-column prop="mobile" label="联系电话" />
     </el-table>
-    <BasePagination
+    <Pagination
       v-model:pageNum="customerQuery.pageNum!"
       v-model:pageSize="customerQuery.pageSize!"
       :total="customerTotal"
@@ -273,7 +273,7 @@
       <el-table-column prop="availableQuantity" label="可用库存数量" width="130" />
       <el-table-column prop="uomName" label="商品单位" width="100" />
     </el-table>
-    <BasePagination
+    <Pagination
       v-model:pageNum="productQuery.pageNum!"
       v-model:pageSize="productQuery.pageSize!"
       :total="productTotal"
@@ -291,7 +291,7 @@ import { computed, nextTick, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Delete, Plus, Search } from '@element-plus/icons-vue'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
-import BasePagination from '@/components/page/BasePagination.vue'
+import Pagination from '@/layouts/components/Pagination.vue'
 import QueryInput from '@/components/query/Query/QueryInput.vue'
 import { queryAllCustomersApi } from '@/api/product/customer'
 import { queryAllWarehousesApi } from '@/api/product/warehouse'

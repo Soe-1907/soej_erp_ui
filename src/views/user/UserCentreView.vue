@@ -12,23 +12,46 @@
               src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
             />
           </div>
-          <el-descriptions :column="1" border>
-            <el-descriptions-item label="用户姓名">
-              {{ userInfo?.realName || userInfo?.userName || '-' }}
-            </el-descriptions-item>
-            <el-descriptions-item label="联系电话">
-              {{ userInfo?.mobile || '暂无' }}
-            </el-descriptions-item>
-            <el-descriptions-item label="所属角色">
-              {{ userInfo?.roleName || '-' }}
-            </el-descriptions-item>
-            <el-descriptions-item label="创建日期">
-              {{ userInfo?.createAt || '-' }}
-            </el-descriptions-item>
-          </el-descriptions>
+          <div class="profile-list">
+            <div class="profile-list-item">
+              <span class="desc-label-with-icon">
+                <UserBlackIcon />
+                用户姓名
+              </span>
+              <span class="desc-value-right">
+                {{ userInfo?.realName || userInfo?.userName || "-" }}
+              </span>
+            </div>
+            <div class="profile-list-item">
+              <span class="desc-label-with-icon">
+                <PhoneIcon />
+                联系电话
+              </span>
+              <span class="desc-value-right">
+                {{ userInfo?.mobile || "暂无" }}
+              </span>
+            </div>
+            <div class="profile-list-item">
+              <span class="desc-label-with-icon">
+                <UserRoleIcon />
+                所属角色
+              </span>
+              <span class="desc-value-right">
+                {{ userInfo?.roleName || "-" }}
+              </span>
+            </div>
+            <div class="profile-list-item">
+              <span class="desc-label-with-icon">
+                <ClalendarIcon />
+                创建日期
+              </span>
+              <span class="desc-value-right">
+                {{ userInfo?.createAt || "-" }}
+              </span>
+            </div>
+          </div>
         </el-card>
       </el-col>
-
       <el-col :span="16">
         <el-card shadow="never">
           <template #header>
@@ -68,9 +91,7 @@
               <el-button type="primary" :loading="saving" @click="handleSave">
                 保存
               </el-button>
-              <el-button @click="handleClose">
-                关闭
-              </el-button>
+              <el-button @click="handleClose" type="danger"> 关闭 </el-button>
             </el-form-item>
           </el-form>
         </el-card>
@@ -80,104 +101,131 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
-import type { FormInstance } from 'element-plus'
-import { ElMessage } from 'element-plus'
-import { changePasswordApi } from '@/api/product/user'
-import { useBreadcrumb } from '@/hooks/Brand/Breadcrumb/useBreadcrumb'
-import { useUserStore } from '@/stores/user'
+import { computed, reactive, ref } from "vue";
+import type { FormInstance } from "element-plus";
+import { ElMessage } from "element-plus";
+import { changePasswordApi } from "@/api/product/user";
+import { useBreadcrumb } from "@/hooks/Brand/Breadcrumb/useBreadcrumb";
+import { useUserStore } from "@/stores/user";
+import ClalendarIcon from "@/components/icons/ClalendarIcon.vue";
+import PhoneIcon from "@/components/icons/PhoneIcon.vue";
+import UserBlackIcon from "@/components/icons/UserBlackIcon.vue";
+import UserRoleIcon from "@/components/icons/UserRoleIcon.vue";
+const PASSWORD_MAX_LENGTH = 16;
+const PASSWORD_PATTERN = /^[A-Za-z0-9]+$/;
 
-const PASSWORD_MAX_LENGTH = 16
-const PASSWORD_PATTERN = /^[A-Za-z0-9]+$/
+const userStore = useUserStore();
+const { closeCurrentTab } = useBreadcrumb();
 
-const userStore = useUserStore()
-const { closeCurrentTab } = useBreadcrumb()
-
-const userInfo = computed(() => userStore.userInfo)
-const passwordFormRef = ref<FormInstance>()
-const saving = ref(false)
+const userInfo = computed(() => userStore.userInfo);
+const passwordFormRef = ref<FormInstance>();
+const saving = ref(false);
 const passwordForm = reactive({
-  oldPassword: '',
-  newPassword: '',
-  confirmPassword: '',
-})
+  oldPassword: "",
+  newPassword: "",
+  confirmPassword: "",
+});
 
 const showValidationError = (message: string) => {
-  ElMessage.error(message)
-  return false
-}
+  ElMessage.error(message);
+  return false;
+};
 
 const validateRequired = (value: string, message: string) => {
   if (!value) {
-    return showValidationError(message)
+    return showValidationError(message);
   }
-  return true
-}
+  return true;
+};
 
 const validateLength = (value: string, message: string) => {
   if (value.length > PASSWORD_MAX_LENGTH) {
-    return showValidationError(message)
+    return showValidationError(message);
   }
-  return true
-}
+  return true;
+};
 
 const validateFormat = (value: string, message: string) => {
   if (!PASSWORD_PATTERN.test(value)) {
-    return showValidationError(message)
+    return showValidationError(message);
   }
-  return true
-}
+  return true;
+};
 
 const validatePasswordForm = () => {
-  if (!validateRequired(passwordForm.oldPassword, '旧密码必填，请重新输入。')) return false
-  if (!validateLength(passwordForm.oldPassword, '旧密码长度错误，请重新输入。')) return false
-  if (!validateFormat(passwordForm.oldPassword, '旧密码格式错误，请重新输入。')) return false
+  if (!validateRequired(passwordForm.oldPassword, "旧密码必填，请重新输入。"))
+    return false;
+  if (!validateLength(passwordForm.oldPassword, "旧密码长度错误，请重新输入。"))
+    return false;
+  if (!validateFormat(passwordForm.oldPassword, "旧密码格式错误，请重新输入。"))
+    return false;
 
-  if (!validateRequired(passwordForm.newPassword, '新密码必填，请重新输入。')) return false
+  if (!validateRequired(passwordForm.newPassword, "新密码必填，请重新输入。"))
+    return false;
   if (passwordForm.newPassword === passwordForm.oldPassword) {
-    return showValidationError('新密码与旧密码重复，请重新输入。')
+    return showValidationError("新密码与旧密码重复，请重新输入。");
   }
-  if (!validateLength(passwordForm.newPassword, '新密码长度错误，请重新输入。')) return false
-  if (!validateFormat(passwordForm.newPassword, '新密码格式错误，请重新输入。')) return false
+  if (!validateLength(passwordForm.newPassword, "新密码长度错误，请重新输入。"))
+    return false;
+  if (!validateFormat(passwordForm.newPassword, "新密码格式错误，请重新输入。"))
+    return false;
 
-  if (!validateRequired(passwordForm.confirmPassword, '确认密码必填，请重新输入。')) return false
+  if (
+    !validateRequired(
+      passwordForm.confirmPassword,
+      "确认密码必填，请重新输入。",
+    )
+  )
+    return false;
   if (passwordForm.confirmPassword !== passwordForm.newPassword) {
-    return showValidationError('确认密码与新密码不一致，请重新输入。')
+    return showValidationError("确认密码与新密码不一致，请重新输入。");
   }
-  if (!validateLength(passwordForm.confirmPassword, '确认密码长度错误，请重新输入。')) return false
-  if (!validateFormat(passwordForm.confirmPassword, '确认密码格式错误，请重新输入。')) return false
+  if (
+    !validateLength(
+      passwordForm.confirmPassword,
+      "确认密码长度错误，请重新输入。",
+    )
+  )
+    return false;
+  if (
+    !validateFormat(
+      passwordForm.confirmPassword,
+      "确认密码格式错误，请重新输入。",
+    )
+  )
+    return false;
 
-  return true
-}
+  return true;
+};
 
 const resetPasswordForm = () => {
-  passwordForm.oldPassword = ''
-  passwordForm.newPassword = ''
-  passwordForm.confirmPassword = ''
-  passwordFormRef.value?.clearValidate()
-}
+  passwordForm.oldPassword = "";
+  passwordForm.newPassword = "";
+  passwordForm.confirmPassword = "";
+  passwordFormRef.value?.clearValidate();
+};
 
 const handleSave = async () => {
   if (!validatePasswordForm()) {
-    return
+    return;
   }
 
-  saving.value = true
+  saving.value = true;
   try {
-    await changePasswordApi({ ...passwordForm })
-    ElMessage.success('修改成功')
-    resetPasswordForm()
+    await changePasswordApi({ ...passwordForm });
+    ElMessage.success("修改成功");
+    resetPasswordForm();
   } catch {
     // 请求拦截器会展示后端返回的错误提示。
   } finally {
-    saving.value = false
+    saving.value = false;
   }
-}
+};
 
 const handleClose = () => {
-  resetPasswordForm()
-  closeCurrentTab()
-}
+  resetPasswordForm();
+  closeCurrentTab();
+};
 </script>
 
 <style scoped>
@@ -190,6 +238,7 @@ const handleClose = () => {
 .profile-card,
 .password-form {
   height: 100%;
+  
 }
 
 .avatar-wrapper {
@@ -199,6 +248,48 @@ const handleClose = () => {
 }
 
 .password-form {
-  max-width: 560px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.password-form :deep(.el-form-item__label) {
+  font-weight: 700;
+}
+
+.password-form :deep(.el-form-item__content) {
+  width: 100%;
+}
+
+.password-form :deep(.el-input) {
+  width: 100%;
+}
+
+.profile-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  padding: 12px 2px;
+  gap: 12px;
+}
+
+.profile-list-item:last-child {
+  border-bottom: none;
+}
+
+.desc-label-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.desc-value-right {
+  flex-shrink: 0;
+  text-align: right;
+  color: var(--el-text-color-regular);
+  font-size: 14px;
 }
 </style>

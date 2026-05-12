@@ -62,7 +62,7 @@
       </el-table>
 
       <div class="picker-pagination">
-        <BasePagination
+        <Pagination
           v-model:pageNum="query.pageNum!"
           v-model:pageSize="query.pageSize!"
           :total="total"
@@ -78,7 +78,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
-import BasePagination from '@/components/page/BasePagination.vue'
+import Pagination from '@/layouts/components/Pagination.vue'
 import type { SupplierQuery, SupplierVO } from '@/type/supplier'
 import { queryAllSuppliersApi } from '@/api/product/supplier'
 

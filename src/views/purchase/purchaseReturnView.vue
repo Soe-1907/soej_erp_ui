@@ -62,7 +62,7 @@
     </template>
   </BaseTable>
 
-  <BasePagination
+  <Pagination
     v-model:pageNum="query.pageNum!"
     v-model:pageSize="query.pageSize!"
     :total="total"
@@ -87,7 +87,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, RefreshRight, Search } from '@element-plus/icons-vue'
 import type { TableColumn } from '@/type/table'
-import BasePagination from '@/components/page/BasePagination.vue'
+import Pagination from '@/layouts/components/Pagination.vue'
 import BaseTable from '@/components/table/BaseTable/BaseTable.vue'
 import QueryDateTimeRange from '@/components/query/Query/QueryDateTimeRange.vue'
 import QueryInput from '@/components/query/Query/QueryInput.vue'
