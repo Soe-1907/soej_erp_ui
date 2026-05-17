@@ -24,6 +24,7 @@
           <span class="info-value">{{ settlement?.relatedBillCode || '-' }}</span>
           <el-button
             type="primary"
+            link
             size="small"
             :disabled="!canViewRelatedDetail"
             @click="emit('view-detail')"

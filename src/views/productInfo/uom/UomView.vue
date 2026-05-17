@@ -16,7 +16,7 @@
   </div>
 
   <div class="button-container">
-    <el-button type="primary" @click="getAllUoms">查询</el-button>
+    <el-button type="primary" :icon="Search" @click="getAllUoms">查询</el-button>
     <el-button @click="resetQuery">
       <el-icon class="el-icon--left"><RefreshLeft /></el-icon>
       重置
@@ -34,7 +34,7 @@
     :operation-width="220"
   >
     <template #operations="{ row }">
-      <el-button type="primary" size="small" link @click="openEdit(row)">
+      <el-button type="primary" link size="small" @click="openEdit(row)">
         修改
       </el-button>
 
@@ -68,7 +68,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { Plus, RefreshLeft } from "@element-plus/icons-vue";
+import { Plus, RefreshLeft, Search } from "@element-plus/icons-vue";
 import type { TableColumn } from "@/type/table";
 import type { UomDto } from "@/type/uom";
 
@@ -107,7 +107,7 @@ const TableColumns: TableColumn[] = [
     prop: "status",
     label: "状态",
     width: 110,
-    formatter: (_row, _column, value) => (value === 1 ? "启用" : "禁用"),
+    statusButton: true,
   },
 ];
 

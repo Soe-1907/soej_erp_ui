@@ -85,25 +85,29 @@
 
             <el-table
               ref="detailTableRef"
+              class="business-detail-table"
               :data="displayDetails"
               border
+              show-summary
+              :summary-method="salesOutboundLineSummary"
               empty-text="暂无数据"
               style="width: 100%"
               @selection-change="onDetailSelectionChange"
             >
               <el-table-column v-if="!isView" type="selection" width="55" align="center" />
               <el-table-column type="index" label="序号" width="60" align="center" />
-              <el-table-column prop="productCode" label="商品编号" width="130" />
-              <el-table-column prop="productName" label="商品名称" width="150" />
-              <el-table-column prop="categoryName" label="商品分类" width="120" />
-              <el-table-column prop="brandName" label="商品品牌" width="120" />
+              <el-table-column prop="productCode" label="商品编号" min-width="128" />
+              <el-table-column prop="productName" label="商品名称" min-width="150" />
+              <el-table-column prop="categoryName" label="商品分类" width="108" />
+              <el-table-column prop="brandName" label="商品品牌" width="108" />
               <el-table-column
                 v-if="showStockColumns"
                 prop="availableQuantity"
                 label="可用库存数量"
-                width="130"
+                width="124"
+                align="right"
               />
-              <el-table-column label="销售出库数量" width="140">
+              <el-table-column prop="outboundQuantity" label="销售出库数量" width="132" align="right">
                 <template #default="{ row }">
                   <span v-if="isView">{{ row.outboundQuantity ?? '-' }}</span>
                   <el-input
@@ -115,11 +119,11 @@
                   />
                 </template>
               </el-table-column>
-              <el-table-column prop="uomName" label="商品单位" width="100" />
-              <el-table-column label="建议销售价（元）" width="140">
+              <el-table-column prop="uomName" label="商品单位" width="96" />
+              <el-table-column prop="suggestedPrice" label="建议销售价（元）" width="136" align="right">
                 <template #default="{ row }">{{ formatMoney(row.suggestedPrice) }}</template>
               </el-table-column>
-              <el-table-column label="实际销售价（元）" width="150">
+              <el-table-column prop="actualPrice" label="实际销售价（元）" width="148" align="right">
                 <template #default="{ row }">
                   <span v-if="isView">{{ formatMoney(row.actualPrice) }}</span>
                   <el-input
@@ -131,15 +135,10 @@
                   />
                 </template>
               </el-table-column>
-              <el-table-column label="销售结算金额（元）" width="160">
+              <el-table-column prop="settlementAmount" label="销售结算金额（元）" width="156" align="right">
                 <template #default="{ row }">{{ formatMoney(row.settlementAmount) }}</template>
               </el-table-column>
             </el-table>
-
-            <div class="total-row">
-              <span>合计：</span>
-              <span class="total-amount">销售结算金额 {{ formatMoney(totalSettlementAmount) }}</span>
-            </div>
           </div>
         </el-form-item>
 
@@ -287,7 +286,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, reactive, ref, watch } from 'vue'
+import { computed, h, nextTick, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Delete, Plus, Search } from '@element-plus/icons-vue'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
@@ -307,6 +306,7 @@ import type {
   SalesOutboundVO,
   WarehouseOptionVO,
 } from '@/type/salesOutbound'
+import { getIncomeSettlementRelatedBillDetailApi } from '@/api/product/incomeSettlement'
 import {
   getSalesOutboundDetailViewApi,
   querySalesOutboundPickerFilterOptionsApi,
@@ -320,6 +320,11 @@ const props = withDefaults(
     modelValue: boolean
     mode?: 'add' | 'edit' | 'view'
     outboundCode?: string
+    /**
+     * 收入结算「查看关联单据」场景传入后，查看模式走
+     * GET /income-settlement/{code}/related-bill（结算角色可读，不经销售域权限）
+     */
+    incomeSettlementCode?: string
     /** 编辑时从列表行带入（详情接口无仓/客编号） */
     initialHeader?: {
       warehouseCode: string
@@ -386,9 +391,6 @@ const form = reactive({
 })
 
 const displayDetails = computed(() => details.value)
-const totalSettlementAmount = computed(() =>
-  details.value.reduce((sum, row) => sum + toNumber(row.settlementAmount), 0)
-)
 
 const warehouseDialogVisible = ref(false)
 const warehouseLoading = ref(false)
@@ -705,8 +707,14 @@ function recomputeSettlementAmount(row: DetailRow) {
 async function loadViewData(code: string) {
   detailLoading.value = true
   try {
-    const res = await getSalesOutboundDetailViewApi(code)
-    const view = (res as { data: SalesOutboundDetailViewVO }).data
+    const settlementCode =
+      props.mode === 'view' ? props.incomeSettlementCode?.trim() : undefined
+    const res = settlementCode
+      ? ((await getIncomeSettlementRelatedBillDetailApi(settlementCode)) as {
+          data: SalesOutboundDetailViewVO
+        })
+      : ((await getSalesOutboundDetailViewApi(code)) as { data: SalesOutboundDetailViewVO })
+    const view = res.data
     headerRemark.value = view.remark ?? ''
     sourceMain.value = {
       outboundCode: view.salesOutboundCode,
@@ -744,18 +752,20 @@ async function loadViewData(code: string) {
 }
 
 watch(
-  () => [visible.value, props.mode, props.outboundCode] as const,
-  async ([open, mode, code]) => {
+  () => [visible.value, props.mode, props.outboundCode, props.incomeSettlementCode] as const,
+  async ([open, mode, code, incomeSettlementCode]) => {
     if (!open) return
     resetForm()
     await nextTick()
     if (mode === 'add') return
-    if (!code) {
+    const useIncomeSettlementBill =
+      mode === 'view' && Boolean((incomeSettlementCode as string | undefined)?.trim())
+    if (!code && !useIncomeSettlementBill) {
       ElMessage.error('缺少销售出库单号')
       visible.value = false
       return
     }
-    await loadViewData(code)
+    await loadViewData(code ?? '')
   }
 )
 
@@ -868,6 +878,23 @@ function toNumber(value: number | string | undefined | null) {
   return Number.isNaN(n) ? 0 : n
 }
 
+function salesOutboundLineSummary({
+  columns,
+  data,
+}: {
+  columns: { type?: string; property?: string }[]
+  data: DetailRow[]
+}) {
+  const sum = data.reduce((s, row) => s + toNumber(row.settlementAmount), 0)
+  return columns.map((col) => {
+    if (col.type === 'selection') return ''
+    if (col.type === 'index') return '合计'
+    if (col.property === 'settlementAmount')
+      return h('span', { class: 'business-summary-amount-accent' }, formatMoney(sum))
+    return ''
+  })
+}
+
 function formatDateTimeText(value: string | undefined) {
   if (!value) return '-'
   if (value.includes('T')) return value.replace('T', ' ').slice(0, 19)
@@ -914,17 +941,6 @@ function formatDateTimeText(value: string | undefined) {
 }
 .detail-actions {
   margin-bottom: 12px;
-}
-.total-row {
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 20px;
-  color: #303133;
-}
-.total-amount {
-  font-weight: 600;
-  color: #f56c6c;
 }
 .record-block {
   width: 100%;

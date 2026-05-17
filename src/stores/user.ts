@@ -41,8 +41,9 @@ export const useUserStore = defineStore('user', () => {
       const res = await getUserInfoApi()
       if (res.data) {
         const roleCode = getTokenRoleCode(res.data.token) ?? getTokenRoleCode() ?? res.data.roleCode
-        const menus = loadUserSnapshot()?.menus
-        userInfo.value = { ...res.data, roleCode, menus: menus ?? userInfo.value?.menus }
+        const menus =
+          res.data.menus ?? loadUserSnapshot()?.menus ?? userInfo.value?.menus
+        userInfo.value = { ...res.data, roleCode, menus }
         setUserSnapshot(userInfo.value)
         return true
       }

@@ -12,6 +12,9 @@
       >
         <el-form-item prop="userName">
           <el-input
+            id="login"
+            name="login"
+            class="login"
             v-model="loginForm.userName"
             placeholder="请输入账号"
             size="large"
@@ -27,6 +30,9 @@
 
         <el-form-item prop="passWord">
           <el-input
+            id="password"
+            name="password"
+            class="password"
             v-model="loginForm.passWord"
             type="password"
             placeholder="请输入密码"
@@ -47,10 +53,12 @@
 
         <el-form-item>
           <el-button
+            id="confirm"
+            name="confirm"
             type="primary"
             size="large"
             :loading="loading"
-            class="login-button"
+            class="login-button confirm"
             @click="handleLogin"
           >
             {{ loading ? "登录中..." : "登 录" }}

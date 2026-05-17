@@ -1,32 +1,32 @@
 import request from '@/utils/request'
 import type { CategoryDto, CategoryQuery } from '@/type/category'
 
-// 商品分类列表查询（GET /api/category）
+// 商品分类列表查询（GET /prod-api/manager/category）
 export const queryAllCategoriesApi = (params: CategoryQuery) => {
-  return request.get('/category', { params })
+  return request.get('/manager/category', { params })
 }
 
-// 新增商品分类（POST /api/category）
+// 新增商品分类（POST /prod-api/manager/category/add）
 export const addCategoryApi = (params: CategoryDto) => {
-  return request.post('/category', params)
+  return request.post('/manager/category/add', params)
 }
 
-// 修改商品分类（PUT /api/category）
+// 修改商品分类（PUT /prod-api/manager/category/update）
 export const updateCategoryApi = (params: CategoryDto) => {
-  return request.put('/category', params)
+  return request.put('/manager/category/update', params)
 }
 
-// 分类数据回显（GET /api/category/{categoryId}）
+// 分类数据回显（GET /prod-api/manager/category/{categoryId}）
 export const getCategoryByIdApi = (categoryId: number | string) => {
-  return request.get(`/category/${categoryId}`)
+  return request.get(`/manager/category/${categoryId}`)
 }
 
-/** PUT /api/category/{categoryId}/enable */
+/** PUT /prod-api/manager/category/{categoryId}/enable */
 export const enableCategoryApi = (categoryId: number) => {
-  return request.put(`/category/${categoryId}/enable`)
+  return request.put(`/manager/category/${categoryId}/enable`)
 }
 
-/** PUT /api/category/{categoryId}/disable */
+/** PUT /prod-api/manager/category/{categoryId}/disable */
 export const disableCategoryApi = (categoryId: number) => {
-  return request.put(`/category/${categoryId}/disable`)
+  return request.put(`/manager/category/${categoryId}/disable`)
 }

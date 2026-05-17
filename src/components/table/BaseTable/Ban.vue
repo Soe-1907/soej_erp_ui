@@ -1,5 +1,5 @@
 <template>
-  <el-button link type="primary" size="small" @click="openDialog">
+  <el-button type="primary" link size="small" @click="openDialog">
     {{ createText }}
   </el-button>
   <el-dialog
@@ -68,13 +68,12 @@ const handleConfirm = () => {
 <style scoped>
 .ban-body {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
 }
 
 .ban-message {
   flex: 1;
   line-height: 1.5;
-  padding-top: 6px;
 }
 </style>

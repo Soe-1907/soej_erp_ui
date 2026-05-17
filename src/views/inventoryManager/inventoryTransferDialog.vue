@@ -99,24 +99,28 @@
 
             <el-table
               ref="detailTableRef"
+              class="business-detail-table"
               :data="details"
               border
+              show-summary
+              :summary-method="inventoryTransferLineSummary"
               style="width: 100%"
               @selection-change="onDetailSelectionChange"
             >
               <el-table-column v-if="!isView" type="selection" width="55" align="center" />
               <el-table-column type="index" label="序号" width="60" align="center" />
-              <el-table-column prop="productCode" label="商品编号" width="130" />
-              <el-table-column prop="productName" label="商品名称" width="150" />
-              <el-table-column prop="categoryName" label="商品分类" width="120" />
-              <el-table-column prop="brandName" label="商品品牌" width="120" />
+              <el-table-column prop="productCode" label="商品编号" min-width="128" />
+              <el-table-column prop="productName" label="商品名称" min-width="150" />
+              <el-table-column prop="categoryName" label="商品分类" width="108" />
+              <el-table-column prop="brandName" label="商品品牌" width="108" />
               <el-table-column
                 v-if="showAvailableColumn"
                 prop="availableQuantity"
                 label="可用库存数量"
-                width="130"
+                width="124"
+                align="right"
               />
-              <el-table-column label="调出数量" width="130">
+              <el-table-column prop="outQuantity" label="调出数量" width="124" align="right">
                 <template #default="{ row }">
                   <span v-if="isView">{{ row.outQuantity ?? '-' }}</span>
                   <el-input
@@ -128,11 +132,11 @@
                   />
                 </template>
               </el-table-column>
-              <el-table-column label="调入数量" width="120">
+              <el-table-column prop="inQuantity" label="调入数量" width="116" align="right">
                 <template #default="{ row }">{{ row.inQuantity ?? row.outQuantity ?? '-' }}</template>
               </el-table-column>
-              <el-table-column prop="uomName" label="商品单位" width="100" />
-              <el-table-column label="备注" min-width="180">
+              <el-table-column prop="uomName" label="商品单位" width="96" />
+              <el-table-column prop="lineRemark" label="备注" min-width="180">
                 <template #default="{ row }">
                   <span v-if="isView">{{ row.lineRemark || '-' }}</span>
                   <el-input
@@ -690,6 +694,31 @@ function warehouseIndexMethod(index: number) {
 
 function productIndexMethod(index: number) {
   return ((productQuery.value.pageNum ?? 1) - 1) * (productQuery.value.pageSize ?? 10) + index + 1
+}
+
+function inventoryTransferLineSummary({
+  columns,
+  data,
+}: {
+  columns: { type?: string; property?: string }[]
+  data: DetailRow[]
+}) {
+  const sumOut = data.reduce((s, r) => s + (Number(String(r?.outQuantity ?? '').trim()) || 0), 0)
+  const sumIn = data.reduce((s, r) => {
+    const rawIn = r.inQuantity
+    if (rawIn !== undefined && rawIn !== null && String(rawIn).trim() !== '') {
+      const n = Number(rawIn)
+      return s + (Number.isFinite(n) ? n : 0)
+    }
+    return s + (Number(String(r?.outQuantity ?? '').trim()) || 0)
+  }, 0)
+  return columns.map((col) => {
+    if (col.type === 'selection') return ''
+    if (col.type === 'index') return '合计'
+    if (col.property === 'outQuantity') return data.length ? String(sumOut) : ''
+    if (col.property === 'inQuantity') return data.length ? String(sumIn) : ''
+    return ''
+  })
 }
 
 function formatDateTimeText(value: string | undefined) {

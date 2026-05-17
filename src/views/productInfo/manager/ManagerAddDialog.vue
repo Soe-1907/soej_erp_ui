@@ -72,7 +72,7 @@
           :max="99999999"
           :precision="2"
           :step="1"
-          controls-position="right"
+          :controls="false"
           placeholder="请输入建议采购价（元）"
           style="width: 100%"
         />
@@ -85,7 +85,7 @@
           :max="99999999"
           :precision="2"
           :step="1"
-          controls-position="right"
+          :controls="false"
           placeholder="请输入建议销售价（元）"
           style="width: 100%"
         />

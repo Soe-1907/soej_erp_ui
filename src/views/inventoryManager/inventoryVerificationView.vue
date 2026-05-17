@@ -116,7 +116,14 @@
       </div>
 
       <h4>商品列表</h4>
-      <el-table :data="detailList" style="width: 100%">
+      <el-table
+        class="business-detail-table"
+        :data="detailList"
+        border
+        show-summary
+        :summary-method="outboundDetailLineSummary"
+        style="width: 100%"
+      >
         <el-table-column type="index" label="序号" width="70" />
         <el-table-column prop="productCode" label="商品编号" min-width="140" />
         <el-table-column prop="productName" label="商品名称" min-width="140" />
@@ -127,8 +134,9 @@
           prop="availableQuantity"
           label="可用库存数量"
           width="130"
+          align="right"
         />
-        <el-table-column prop="outboundQuantity" label="出库数量" width="110" />
+        <el-table-column prop="outboundQuantity" label="出库数量" width="110" align="right" />
         <el-table-column prop="uomName" label="商品单位" width="100" />
         <el-table-column v-if="isTransferDocument" prop="lineRemark" label="备注" min-width="120" />
       </el-table>
@@ -162,14 +170,21 @@
       </div>
 
       <h4>商品列表</h4>
-      <el-table :data="detailList" style="width: 100%">
+      <el-table
+        class="business-detail-table"
+        :data="detailList"
+        border
+        show-summary
+        :summary-method="outboundDetailLineSummary"
+        style="width: 100%"
+      >
         <el-table-column type="index" label="序号" width="70" />
         <el-table-column prop="productCode" label="商品编号" min-width="140" />
         <el-table-column prop="productName" label="商品名称" min-width="140" />
         <el-table-column prop="categoryName" label="商品分类" width="110" />
         <el-table-column prop="brandName" label="商品品牌" width="110" />
-        <el-table-column prop="availableQuantity" label="可用库存数量" width="130" />
-        <el-table-column prop="outboundQuantity" label="出库数量" width="110" />
+        <el-table-column prop="availableQuantity" label="可用库存数量" width="130" align="right" />
+        <el-table-column prop="outboundQuantity" label="出库数量" width="110" align="right" />
         <el-table-column prop="uomName" label="商品单位" width="100" />
         <el-table-column v-if="isTransferDocument" prop="lineRemark" label="备注" min-width="120" />
       </el-table>
@@ -233,6 +248,7 @@ import {
   AUDIT_STATUS_OPTIONS,
   OUTBOUND_BUSINESS_TYPES,
   type OutboundAuditListItem,
+  type OutboundAuditProductLine,
 } from '@/type/inventoryVerification'
 import { useInventoryVerification } from '@/hooks/InventoryVerification/useInventoryVerification'
 
@@ -336,6 +352,21 @@ function formatDateTime(value: unknown) {
   const text = String(value)
   if (text.includes('T')) return text.replace('T', ' ').slice(0, 19)
   return text.length >= 19 ? text.slice(0, 19) : text
+}
+
+function outboundDetailLineSummary({
+  columns,
+  data,
+}: {
+  columns: { type?: string; property?: string }[]
+  data: OutboundAuditProductLine[]
+}) {
+  const sum = data.reduce((s, row) => s + (Number(row?.outboundQuantity) || 0), 0)
+  return columns.map((col) => {
+    if (col.type === 'index') return '合计'
+    if (col.property === 'outboundQuantity') return data.length ? String(sum) : ''
+    return ''
+  })
 }
 </script>
 

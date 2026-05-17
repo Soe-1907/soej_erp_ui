@@ -77,33 +77,37 @@
             </div>
 
             <el-table
+              class="business-detail-table"
               :data="displayDetails"
               border
+              show-summary
+              :summary-method="salesReturnLineSummary"
               empty-text="暂无数据"
               style="width: 100%"
               @selection-change="onSelectionChange"
             >
               <el-table-column v-if="!isView" type="selection" width="55" align="center" />
               <el-table-column type="index" label="序号" width="60" align="center" />
-              <el-table-column prop="productCode" label="商品编号" width="130" />
-              <el-table-column prop="productName" label="商品名称" width="150" />
-              <el-table-column prop="categoryName" label="商品分类" width="120" />
-              <el-table-column prop="brandName" label="商品品牌" width="120" />
-              <el-table-column prop="outboundQuantity" label="销售出库数量" width="130" />
-              <el-table-column prop="uomName" label="商品单位" width="100" />
-              <el-table-column label="实际销售价（元）" width="140">
+              <el-table-column prop="productCode" label="商品编号" min-width="128" />
+              <el-table-column prop="productName" label="商品名称" min-width="150" />
+              <el-table-column prop="categoryName" label="商品分类" width="108" />
+              <el-table-column prop="brandName" label="商品品牌" width="108" />
+              <el-table-column prop="outboundQuantity" label="销售出库数量" width="124" align="right" />
+              <el-table-column prop="uomName" label="商品单位" width="96" />
+              <el-table-column prop="actualPrice" label="实际销售价（元）" width="136" align="right">
                 <template #default="{ row }">{{ formatMoney(row.actualPrice) }}</template>
               </el-table-column>
-              <el-table-column label="销售结算金额（元）" width="160">
+              <el-table-column prop="settlementAmount" label="销售结算金额（元）" width="152" align="right">
                 <template #default="{ row }">{{ formatMoney(row.settlementAmount) }}</template>
               </el-table-column>
               <el-table-column
                 v-if="showReturnableColumn"
                 prop="returnableQuantity"
                 label="可退数量"
-                width="110"
+                width="104"
+                align="right"
               />
-              <el-table-column label="销退数量" width="130">
+              <el-table-column prop="returnQuantity" label="销退数量" width="120" align="right">
                 <template #default="{ row }">
                   <span v-if="isView">{{ row.returnQuantity ?? '-' }}</span>
                   <el-input
@@ -115,16 +119,10 @@
                   />
                 </template>
               </el-table-column>
-              <el-table-column label="销退金额（元）" width="140">
+              <el-table-column prop="returnItemAmount" label="销退金额（元）" width="136" align="right">
                 <template #default="{ row }">{{ formatMoney(row.returnItemAmount) }}</template>
               </el-table-column>
             </el-table>
-
-            <div class="total-row">
-              <span>合计：</span>
-              <span>销售结算金额 {{ formatMoney(totalSettlementAmount) }}</span>
-              <span class="total-amount">销退金额 {{ formatMoney(totalReturnAmount) }}</span>
-            </div>
           </div>
         </el-form-item>
 
@@ -161,7 +159,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, reactive, ref, watch } from 'vue'
+import { computed, h, nextTick, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Delete } from '@element-plus/icons-vue'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
@@ -236,12 +234,6 @@ const form = reactive({
 })
 
 const displayDetails = computed(() => details.value)
-const totalSettlementAmount = computed(() =>
-  details.value.reduce((sum, row) => sum + toNumber(row.settlementAmount), 0)
-)
-const totalReturnAmount = computed(() =>
-  details.value.reduce((sum, row) => sum + toNumber(row.returnItemAmount), 0)
-)
 
 function mapStatusLabel(auditStatus: number, desc: string) {
   if (auditStatus === 2) return '已完成'
@@ -513,6 +505,25 @@ function toNumber(value: number | string | undefined | null) {
   return Number.isNaN(n) ? 0 : n
 }
 
+function salesReturnLineSummary({
+  columns,
+  data,
+}: {
+  columns: { type?: string; property?: string }[]
+  data: DetailRow[]
+}) {
+  const sumSettle = data.reduce((s, r) => s + toNumber(r.settlementAmount), 0)
+  const sumReturn = data.reduce((s, r) => s + toNumber(r.returnItemAmount), 0)
+  return columns.map((col) => {
+    if (col.type === 'selection') return ''
+    if (col.type === 'index') return '合计'
+    if (col.property === 'settlementAmount') return formatMoney(sumSettle)
+    if (col.property === 'returnItemAmount')
+      return h('span', { class: 'business-summary-amount-accent' }, formatMoney(sumReturn))
+    return ''
+  })
+}
+
 function formatDateTimeText(value: string | undefined) {
   if (!value) return '-'
   if (value.includes('T')) return value.replace('T', ' ').slice(0, 19)
@@ -559,17 +570,6 @@ function formatDateTimeText(value: string | undefined) {
 }
 .detail-actions {
   margin-bottom: 12px;
-}
-.total-row {
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 20px;
-  color: #303133;
-}
-.total-amount {
-  font-weight: 600;
-  color: #f56c6c;
 }
 .record-block {
   width: 100%;

@@ -18,7 +18,7 @@
       :min-width="colum.minWidth ?? 180"
       :align="colum.align || 'center'"
       :header-align="colum.headerAlign || colum.align || 'center'"
-      :formatter="colum.imageThumb ? undefined : colum.formatter"
+      :formatter="colum.imageThumb || colum.statusButton ? undefined : colum.formatter"
     >
       <template v-if="colum.imageThumb" #default="{ row }">
         <el-image
@@ -30,6 +30,16 @@
           style="width: 48px; height: 48px; border-radius: 4px"
         />
         <span v-else class="text-muted">—</span>
+      </template>
+      <template v-else-if="colum.statusButton" #default="{ row }">
+        <el-button
+          :type="getStatusButtonType(row[colum.prop])"
+          link
+          size="big"
+          class="status-button"
+        >
+          {{ getStatusText(row[colum.prop]) }}
+        </el-button>
       </template>
     </el-table-column>
 
@@ -72,12 +82,22 @@ const props = withDefaults(
 );
 
 const indexMethod = (index: number) => props.indexBase + index + 1;
+
+const isEnabledStatus = (value: unknown) => Number(value) === 1;
+
+const getStatusText = (value: unknown) => (isEnabledStatus(value) ? "启用" : "禁用");
+
+const getStatusButtonType = (value: unknown) => (isEnabledStatus(value) ? "success" : "info");
 </script>
 
 <style scoped>
 .text-muted {
   color: #909399;
   font-size: 13px;
+}
+
+.status-button {
+  cursor: default;
 }
 
 :deep(.el-table__header th.el-table__cell .cell) {

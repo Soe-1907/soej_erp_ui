@@ -19,7 +19,8 @@
             class="tab-label"
             @contextmenu.prevent="handleContextMenu($event, item.name)"
           >
-            {{ item.title }}
+            <TagTabBulletIcon class="tab-label__bullet" />
+            <span class="tab-label__text">{{ item.title }}</span>
           </span>
         </template>
       </el-tab-pane>
@@ -70,6 +71,7 @@ import {
   DArrowRight,
   CircleCloseFilled,
 } from "@element-plus/icons-vue";
+import TagTabBulletIcon from "@/components/icons/TagTabBulletIcon.vue";
 import { useBreadcrumb } from "@/hooks/Brand/Breadcrumb/useBreadcrumb";
 
 const {
@@ -176,8 +178,14 @@ onBeforeUnmount(() => {
 }
 
 .tab-label {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   user-select: none;
+}
+
+.tab-label__text {
+  line-height: 1;
 }
 
 :deep(.el-tabs__header) {

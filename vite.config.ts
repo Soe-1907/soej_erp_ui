@@ -17,7 +17,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': {
+      '/prod-api': {
         target: 'http://localhost:8081',
         secure: false,
         changeOrigin: true,

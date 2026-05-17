@@ -3,6 +3,7 @@ import 'element-plus/dist/index.css'  // 需要导入样式文件
 import './styles/layout-reset.css'
 import './styles/query-label.css'
 import './styles/dialog-form-label.css'
+import './styles/business-dialog-table.css'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import { createPinia } from 'pinia'
 

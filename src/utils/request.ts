@@ -5,7 +5,7 @@ import { resetBreadcrumbState } from '@/hooks/Brand/Breadcrumb/useBreadcrumb'
 
 //创建axios实例对象
 const request = axios.create({
-  baseURL: '/api',
+  baseURL: '/prod-api',
   timeout: 600000
 })
 

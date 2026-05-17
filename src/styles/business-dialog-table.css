@@ -1,0 +1,20 @@
+/* 业务单据弹窗内商品明细表：表头加粗、底部汇总行浅灰底 */
+.business-detail-table .el-table__header-wrapper th.el-table__cell {
+  font-weight: 700;
+  color: #303133;
+}
+
+.business-detail-table .el-table__footer-wrapper td.el-table__cell {
+  background-color: #f5f7fa !important;
+}
+
+.business-detail-table .el-table__footer-wrapper .cell {
+  font-weight: 600;
+  color: #303133;
+}
+
+/* 汇总行中需强调的金额（如采退/销退金额、结算合计等） */
+.business-summary-amount-accent {
+  color: #f56c6c;
+  font-weight: 600;
+}

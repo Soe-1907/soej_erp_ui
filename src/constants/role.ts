@@ -7,6 +7,8 @@
  * 7 结算专员 / 8 结算管理员（需求文档「结算主管」对应此角色码）
  */
 export const ROLE_ADMIN = 0
+/** 超级管理员：系统维护与数据清理 */
+export const ROLE_SUPER_ADMIN = 999
 export const ROLE_WAREHOUSE_MANAGER = 1
 export const ROLE_WAREHOUSE_SPECIALIST = 2
 export const ROLE_PURCHASE_SPECIALIST = 3
@@ -17,6 +19,9 @@ export const ROLE_SETTLEMENT_SPECIALIST = 7
 export const ROLE_SETTLEMENT_MANAGER = 8
 
 export function landingPathByRole(roleCode?: number): string {
+  if (roleCode === ROLE_SUPER_ADMIN) {
+    return '/data-cleanup'
+  }
   if (roleCode === ROLE_WAREHOUSE_MANAGER) {
     return '/inventory-distribution'
   }

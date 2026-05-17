@@ -52,11 +52,13 @@
     v-model="salesOutboundVisible"
     mode="view"
     :outbound-code="selectedRelatedCode"
+    :income-settlement-code="incomeDetailSettlementCode"
   />
   <PurchaseReturnDialog
     v-model="purchaseReturnVisible"
     mode="view"
     :return-code="selectedRelatedCode"
+    :income-settlement-code="incomeDetailSettlementCode"
   />
 </template>
 
@@ -84,6 +86,8 @@ const salesOutboundVisible = ref(false)
 const purchaseReturnVisible = ref(false)
 const selectedSettlement = ref<IncomeSettlementVO | null>(null)
 const selectedRelatedCode = ref('')
+/** 打开关联业务单查看弹窗时传入，走 income-settlement related-bill（结算角色可读） */
+const incomeDetailSettlementCode = ref('')
 
 const bizTypeOptions = [
   { value: 1, label: '销出收入' },
@@ -138,6 +142,7 @@ function onViewRelatedDetail() {
     return
   }
 
+  incomeDetailSettlementCode.value = settlement.incomeSettlementCode
   selectedRelatedCode.value = settlement.relatedBillCode
   if (settlement.sourceType === SOURCE_TYPE_SALES_OUTBOUND) {
     salesOutboundVisible.value = true

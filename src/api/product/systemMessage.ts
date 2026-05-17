@@ -15,3 +15,7 @@ export const querySystemMessagesApi = (params: SystemMessageQuery = {}) => {
 export const countSystemMessagesApi = () => {
   return request.get<number>('/system-messages/count')
 }
+
+export const markAllSystemMessagesReadApi = () => {
+  return request.post<void>('/system-messages/read-all')
+}

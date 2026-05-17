@@ -20,6 +20,17 @@
       </template>
       <template v-else>
         <!-- 无登录菜单快照时的回退（与后端 LoginMenuFactory 保持一致） -->
+        <el-sub-menu v-if="isSuperAdmin" index="system-maintenance">
+          <template #title>
+            <el-icon><Setting /></el-icon>
+            <span>系统维护</span>
+          </template>
+          <el-menu-item index="/data-cleanup">
+            <el-icon><Delete /></el-icon>
+            <template #title>数据清理</template>
+          </el-menu-item>
+        </el-sub-menu>
+
         <el-sub-menu v-if="isAdmin" index="base-info">
           <template #title>
             <el-icon><Menu /></el-icon>
@@ -133,17 +144,6 @@
           </el-menu-item>
         </el-sub-menu>
       </template>
-
-      <el-sub-menu v-if="!isAdmin" index="common-features">
-        <template #title>
-          <el-icon><Setting /></el-icon>
-          <span>通用功能</span>
-        </template>
-        <el-menu-item index="/user">
-          <el-icon><User /></el-icon>
-          <template #title>个人中心</template>
-        </el-menu-item>
-      </el-sub-menu>
     </el-menu>
   </div>
 </template>
@@ -151,11 +151,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Goods, Grid, Menu, OfficeBuilding, Setting, User } from '@element-plus/icons-vue'
+import { Delete, Goods, Grid, Menu, OfficeBuilding, Setting } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import SidebarMenuBranch from './SidebarMenuBranch.vue'
 import {
   ROLE_ADMIN,
+  ROLE_SUPER_ADMIN,
   ROLE_PURCHASE_MANAGER,
   ROLE_PURCHASE_SPECIALIST,
   ROLE_SALES_MANAGER,
@@ -173,12 +174,18 @@ const roleCode = computed(() => userStore.userInfo?.roleCode)
 const serverMenus = computed(() => userStore.userInfo?.menus ?? [])
 const hasServerMenus = computed(() => serverMenus.value.length > 0)
 
+const isSuperAdmin = computed(() => roleCode.value === ROLE_SUPER_ADMIN)
 const isAdmin = computed(() => roleCode.value === ROLE_ADMIN)
 
-/** 系统管理员仅展示「基础信息管理」（与需求对齐；后端仍可能返回结算等模块） */
+/** 系统管理员仅展示「基础信息管理」；超级管理员仅展示「系统维护」 */
 const filteredServerMenus = computed(() => {
-  if (!isAdmin.value) return serverMenus.value
-  return serverMenus.value.filter((node) => node.title === '基础信息管理')
+  if (isSuperAdmin.value) {
+    return serverMenus.value.filter((node) => node.title === '系统维护')
+  }
+  if (isAdmin.value) {
+    return serverMenus.value.filter((node) => node.title === '基础信息管理')
+  }
+  return serverMenus.value
 })
 const isWarehouseManager = computed(() => roleCode.value === ROLE_WAREHOUSE_MANAGER)
 const isWarehouseSpecialist = computed(() => roleCode.value === ROLE_WAREHOUSE_SPECIALIST)

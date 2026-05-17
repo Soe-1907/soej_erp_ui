@@ -7,6 +7,8 @@ export interface TableColumn {
     align?: "left" | "center" | "right"
     headerAlign?: "left" | "center" | "right"
     formatter?: (row: any, column?: any, cellValue?: any) => string
+    /** 启用/禁用状态列，启用 success、禁用 info */
+    statusButton?: boolean
     /** 缩略图列（如商品图片） */
     imageThumb?: boolean
   }

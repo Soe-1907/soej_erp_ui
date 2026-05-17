@@ -11,6 +11,7 @@ import { purchaseRoutes } from '@/router/modules/purchase'
 import { salesRoutes } from '@/router/modules/sales'
 import { settlementRoutes } from '@/router/modules/settlement'
 import { userRoutes } from '@/router/modules/user'
+import { systemRoutes } from '@/router/modules/system'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import LoginView from '@/views/productInfo/login/LoginView.vue'
 
@@ -32,6 +33,7 @@ const router = createRouter({
         ...salesRoutes,
         ...settlementRoutes,
         ...userRoutes,
+        ...systemRoutes,
       ],
     },
   ],

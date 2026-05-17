@@ -23,7 +23,7 @@
 
   <!-- 按钮区 -->
   <div class="button-container">
-    <el-button type="primary" @click="handleQuery">查询</el-button>
+    <el-button type="primary" :icon="Search" @click="handleQuery">查询</el-button>
     <el-button @click="handleReset">
       <el-icon class="el-icon--left"><RefreshLeft /></el-icon>
       重置
@@ -45,12 +45,12 @@
     <template #operations="{ row }">
       <div class="operation-actions">
         <!-- 查看按钮 -->
-        <el-button type="primary" size="small" link @click="openDetail(row)">
+        <el-button type="primary" link size="small" @click="openDetail(row)">
           查看
         </el-button>
 
         <!-- 编辑按钮 -->
-        <el-button type="primary" size="small" link @click="openEdit(row)">
+        <el-button type="primary" link size="small" @click="openEdit(row)">
           修改
         </el-button>
 
@@ -93,7 +93,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
-import { Plus, RefreshLeft } from "@element-plus/icons-vue";
+import { Plus, RefreshLeft, Search } from "@element-plus/icons-vue";
 import type { TableColumn } from "@/type/table";
 import type { CustomerDto } from "@/type/customer";
 
@@ -155,7 +155,7 @@ const TableColumns: TableColumn[] = [
     prop: "status",
     label: "状态",
     width: 110,
-    formatter: (_row, _column, value) => (value === 1 ? "启用" : "禁用"),
+    statusButton: true,
   },
 ];
 

@@ -96,32 +96,44 @@
               <el-button type="danger" plain :icon="Delete" @click="onDeleteRows">删除行</el-button>
             </div>
 
-            <el-table v-if="isView" :data="details" style="width: 100%">
+            <el-table
+              v-if="isView"
+              class="business-detail-table"
+              :data="details"
+              border
+              show-summary
+              :summary-method="purchaseReceiveViewSummary"
+              empty-text="暂无数据"
+              style="width: 100%"
+            >
               <el-table-column type="index" label="序号" width="60" align="center" />
-              <el-table-column prop="productCode" label="商品编号" width="140" />
-              <el-table-column prop="productName" label="商品名称" min-width="200" />
-              <el-table-column prop="categoryName" label="商品分类" width="120" />
-              <el-table-column prop="brandName" label="商品品牌" width="120" />
-              <el-table-column prop="purchaseQuantity" label="采购入库数量" width="150" />
-              <el-table-column prop="uomName" label="商品单位" width="100" />
-              <el-table-column prop="suggestPrice" label="建议采购价（元）" width="140" :formatter="moneyFormatter" />
-              <el-table-column prop="actualPrice" label="实际采购价（元）" width="160" :formatter="moneyFormatter" />
-              <el-table-column prop="settlementAmount" label="采购结算金额（元）" width="160" :formatter="moneyFormatter" />
+              <el-table-column prop="productCode" label="商品编号" min-width="130" />
+              <el-table-column prop="productName" label="商品名称" min-width="180" />
+              <el-table-column prop="categoryName" label="商品分类" width="110" />
+              <el-table-column prop="brandName" label="商品品牌" width="110" />
+              <el-table-column prop="purchaseQuantity" label="采购入库数量" width="130" align="right" />
+              <el-table-column prop="uomName" label="商品单位" width="96" />
+              <el-table-column prop="suggestPrice" label="建议采购价（元）" width="136" align="right" :formatter="moneyFormatter" />
+              <el-table-column prop="actualPrice" label="实际采购价（元）" width="150" align="right" :formatter="moneyFormatter" />
+              <el-table-column prop="settlementAmount" label="采购结算金额（元）" width="156" align="right" :formatter="moneyFormatter" />
             </el-table>
 
             <el-table
               v-else
               ref="tableRef"
+              class="business-detail-table"
               :data="details"
               border
+              show-summary
+              :summary-method="purchaseReceiveEditSummary"
               empty-text="暂无数据"
               style="width: 100%"
               @selection-change="onSelectionChange"
             >
               <el-table-column type="selection" width="55" align="center" />
               <el-table-column type="index" label="序号" width="60" align="center" />
-              <el-table-column prop="productCode" label="商品编号" width="140" />
-              <el-table-column label="商品名称" min-width="200">
+              <el-table-column prop="productCode" label="商品编号" min-width="130" />
+              <el-table-column label="商品名称" min-width="180" prop="productName">
                 <template #default="{ row }">
                   <el-autocomplete
                     v-model="row.productName"
@@ -140,9 +152,9 @@
                   </el-autocomplete>
                 </template>
               </el-table-column>
-              <el-table-column prop="categoryName" label="商品分类" width="120" />
-              <el-table-column prop="brandName" label="商品品牌" width="120" />
-              <el-table-column label="采购入库数量" width="150">
+              <el-table-column prop="categoryName" label="商品分类" width="110" />
+              <el-table-column prop="brandName" label="商品品牌" width="110" />
+              <el-table-column prop="purchaseQuantity" label="采购入库数量" width="130" align="right">
                 <template #default="{ row }">
                   <el-input
                     v-model="row.purchaseQuantity"
@@ -152,13 +164,13 @@
                   />
                 </template>
               </el-table-column>
-              <el-table-column prop="uomName" label="商品单位" width="100" />
-              <el-table-column label="建议采购价（元）" width="140">
+              <el-table-column prop="uomName" label="商品单位" width="96" />
+              <el-table-column prop="suggestPrice" label="建议采购价（元）" width="136" align="right">
                 <template #default="{ row }">
                   <span>{{ formatMoney(row.suggestPrice) }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="实际采购价（元）" width="160">
+              <el-table-column prop="actualPrice" label="实际采购价（元）" width="150" align="right">
                 <template #default="{ row }">
                   <el-input
                     v-model="row.actualPrice"
@@ -168,17 +180,12 @@
                   />
                 </template>
               </el-table-column>
-              <el-table-column label="采购结算金额（元）" width="160">
+              <el-table-column prop="settlementAmount" label="采购结算金额（元）" width="156" align="right">
                 <template #default="{ row }">
                   <span>{{ formatMoney(row.settlementAmount) }}</span>
                 </template>
               </el-table-column>
             </el-table>
-
-            <div class="total-row">
-              <span>合计：</span>
-              <span class="total-amount">{{ formatMoney(totalAmount) }}</span>
-            </div>
           </div>
         </el-form-item>
 
@@ -215,7 +222,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, reactive, ref, watch } from "vue";
+import { computed, h, nextTick, reactive, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { Plus, Delete } from "@element-plus/icons-vue";
 import BaseDialog from "@/components/dialog/BaseDialog.vue";
@@ -265,9 +272,6 @@ const isEdit = computed(() => props.mode === "edit");
 const showRecords = computed(() => isView.value || isEdit.value);
 const dialogTitle = computed(() => {
   if (isView.value) return "查看采购入库单";
-  if (isEdit.value && props.purchaseReceiveCode) {
-    return `修改采购入库单（${props.purchaseReceiveCode}）`;
-  }
   return isEdit.value ? "修改采购入库单" : "新增采购入库单";
 });
 
@@ -473,6 +477,41 @@ function formatMoney(v: number | string | undefined): string {
 
 function moneyFormatter(_row: unknown, _col: unknown, cell: unknown): string {
   return formatMoney(cell as number | string | undefined);
+}
+
+type SummaryCol = { type?: string; property?: string };
+
+function purchaseReceiveViewSummary({
+  columns,
+  data,
+}: {
+  columns: SummaryCol[];
+  data: DetailRow[];
+}) {
+  const settlementTotal = data.reduce((s, r) => s + (Number(r.settlementAmount) || 0), 0);
+  return columns.map((col) => {
+    if (col.type === "index") return "合计";
+    if (col.property === "settlementAmount")
+      return h("span", { class: "business-summary-amount-accent" }, formatMoney(settlementTotal));
+    return "";
+  });
+}
+
+function purchaseReceiveEditSummary({
+  columns,
+  data,
+}: {
+  columns: SummaryCol[];
+  data: DetailRow[];
+}) {
+  const settlementTotal = data.reduce((s, r) => s + (Number(r.settlementAmount) || 0), 0);
+  return columns.map((col) => {
+    if (col.type === "selection") return "";
+    if (col.type === "index") return "合计";
+    if (col.property === "settlementAmount")
+      return h("span", { class: "business-summary-amount-accent" }, formatMoney(settlementTotal));
+    return "";
+  });
 }
 
 function resetForm() {
@@ -726,18 +765,6 @@ function formatDateTimeText(v: string | undefined) {
   margin-bottom: 12px;
   display: flex;
   gap: 12px;
-}
-.total-row {
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  font-size: 14px;
-  color: #303133;
-}
-.total-amount {
-  font-weight: 600;
-  color: #f56c6c;
 }
 .record-block {
   width: 100%;

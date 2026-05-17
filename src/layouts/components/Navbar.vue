@@ -82,7 +82,11 @@ import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
 import { ArrowDown, UserFilled, SwitchButton } from '@element-plus/icons-vue'
-import { countSystemMessagesApi, querySystemMessagesApi } from '@/api/product/systemMessage'
+import {
+  countSystemMessagesApi,
+  markAllSystemMessagesReadApi,
+  querySystemMessagesApi,
+} from '@/api/product/systemMessage'
 import { ROLE_WAREHOUSE_SPECIALIST } from '@/constants/role'
 import { useUserStore } from '@/stores/user'
 import { useLogin } from '@/hooks/useLogin'
@@ -141,8 +145,15 @@ const fetchSystemMessages = async (expanded = false) => {
 const handleNotificationClick = async () => {
   systemMessageExpanded.value = false
   systemMessageVisible.value = true
-  await refreshMessageCount()
   await fetchSystemMessages(false)
+  if (isWarehouseSpecialist.value) {
+    try {
+      await markAllSystemMessagesReadApi()
+    } catch {
+      // 标已读失败时仍刷新角标，与服务器未读数一致
+    }
+  }
+  await refreshMessageCount()
 }
 
 const handleExpandMessages = async () => {

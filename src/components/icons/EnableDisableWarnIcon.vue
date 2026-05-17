@@ -15,8 +15,8 @@
 <style scoped>
 .enable-disable-warn-icon {
   display: block;
-  width: 40px;
-  height: 40px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
 }
 </style>
